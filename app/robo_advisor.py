@@ -23,19 +23,12 @@ parsed_response = json.loads(response.text)
 
 last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
 
-#breakpoint()
-
 tsd = parsed_response["Time Series (Daily)"]
 
-dates = list(tsd.keys()) # TODO: assumes first day is on top, but consider sorting to ensure latest day is first
+dates = list(tsd.keys()) # assumes latest day is first, but consider sorting to ensure this is the case
 
-latest_day = dates[0] # "2019-02-20"
-
+latest_day = dates[0] #> "2019-02-20"
 latest_close = tsd[latest_day]["4. close"] #> 1,000.00
-
-# maximum of all high prices
-#high_prices = [10, 20, 30, 5]
-#recent_high = max(high_prices)
 
 high_prices = []
 low_prices = []
@@ -87,7 +80,7 @@ print("-------------------------")
 print("RECOMMENDATION: BUY!")
 print("BECAUSE: TODO")
 print("-------------------------")
-print(f"WRITING DATA TO CSV: {csv_file_path}...")
+print(f"WRITING DATA TO CSV: {csv_file_path}")
 print("-------------------------")
 print("HAPPY INVESTING!")
 print("-------------------------")
