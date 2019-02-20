@@ -4,7 +4,10 @@ import csv
 import json
 import os
 
+from dotenv import load_dotenv
 import requests
+
+load_dotenv() #> loads contents of the .env file into the script's environment
 
 # utility function to convert float or integer to usd-formatted string (for printing)
 # ... adapted from: https://github.com/s2t2/shopping-cart-screencast/blob/30c2a2873a796b8766e9b9ae57a2764725ccc793/shopping_cart.py#L56-L59
@@ -15,7 +18,12 @@ def to_usd(my_price):
 # INFO INPUTS
 #
 
-request_url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=MSFT&apikey=demo"
+api_key = os.environ.get("ALPHAVANTAGE_API_KEY") # "demo"
+#print(api_key)
+
+symbol = "MSFT" # TODO: accept user input
+
+request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={api_key}"
 
 response = requests.get(request_url)
 
