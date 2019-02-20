@@ -18,35 +18,45 @@ def to_usd(my_price):
 # INFO INPUTS
 #
 
-api_key = os.environ.get("ALPHAVANTAGE_API_KEY") # "demo"
-#print(api_key)
+# ASSEMBLE REQUEST URL
+
+api_key = os.environ.get("ALPHAVANTAGE_API_KEY", "demo") # default to using the "demo" key if an Env Var is not supplied
 
 symbol = "MSFT" # TODO: accept user input
 
 request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={api_key}"
 
+# ISSUE REQUEST AND PARSE RESPONSE
+
 response = requests.get(request_url)
-
 parsed_response = json.loads(response.text)
-
-last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
-
+metadata = parsed_response["Meta Data"]
 tsd = parsed_response["Time Series (Daily)"]
 
-dates = list(tsd.keys()) # assumes latest day is first, but consider sorting to ensure this is the case
+last_refreshed = metadata["3. Last Refreshed"]
 
-latest_day = dates[0] #> "2019-02-20"
-latest_close = tsd[latest_day]["4. close"] #> 1,000.00
+# TRANSFORM DATA INTO A MORE FAMILIAR / USABLE STRUCTURE (LIST OF DICTIONARIES :-D)
 
-high_prices = []
-low_prices = []
+rows = []
 
-for date in dates:
-    high_price = tsd[date]["2. high"]
-    low_price = tsd[date]["3. low"]
-    high_prices.append(float(high_price))
-    low_prices.append(float(low_price))
+for date, daily_prices in tsd.items(): # see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/datatypes/dictionaries.md
+    row = {
+        "timestamp": date,
+        "open": float(daily_prices["1. open"]),
+        "high": float(daily_prices["2. high"]),
+        "low": float(daily_prices["3. low"]),
+        "close": float(daily_prices["4. close"]),
+        "volume": int(daily_prices["5. volume"])
+    }
+    rows.append(row)
 
+# breakpoint()
+# (pdb) rows[0]
+#> {'timestamp': '2019-02-20', 'open': 107.86, 'high': 107.94, 'low': 106.295, 'close': 107.15, 'volume': 21604807}
+latest_close = rows[0]["close"]
+
+high_prices = [row["high"] for row in rows] # list comprehension for mapping purposes!
+low_prices = [row["low"] for row in rows] # list comprehension for mapping purposes!
 recent_high = max(high_prices)
 recent_low = min(low_prices)
 
@@ -54,41 +64,38 @@ recent_low = min(low_prices)
 # INFO OUTPUTS
 #
 
-#csv_file_path = "data/prices.csv" # a relative filepath
-csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv")
+# WRITE PRICES TO CSV FILE
+# see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/modules/csv.md#writing-csv-files
+
+csv_filepath = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv") # see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/modules/os.md#file-operations
 
 csv_headers = ["timestamp", "open", "high", "low", "close", "volume"]
 
-with open(csv_file_path, "w") as csv_file: # "w" means "open the file for writing"
+with open(csv_filepath, "w") as csv_file:
     writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
     writer.writeheader() # uses fieldnames set above
-    for date in dates:
-        daily_prices = tsd[date]
-        writer.writerow({
-            "timestamp": date,
-            "open": daily_prices["1. open"],
-            "high": daily_prices["2. high"],
-            "low": daily_prices["3. low"],
-            "close": daily_prices["4. close"],
-            "volume": daily_prices["5. volume"]
-        })
+    for row in rows:
+        writer.writerow(row)
 
+# DISPLAY RESULTS
+
+printable_csv_filepath = csv_filepath.split("../")[1] #> data/prices.csv
 
 print("-------------------------")
-print("SELECTED SYMBOL: MSFT")
+print(f"SELECTED SYMBOL: {symbol}")
 print("-------------------------")
 print("REQUESTING STOCK MARKET DATA")
-print("REQUEST AT: 2018-02-20 02:00pm")
+print("REQUEST AT: 2018-02-20 14:00") # TODO: dynamic datetime
 print("-------------------------")
-print(f"LATEST DAY: {last_refreshed}")
+print(f"LAST REFRESH: {last_refreshed}")
 print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
 print(f"RECENT HIGH: {to_usd(float(recent_high))}")
 print(f"RECENT LOW: {to_usd(float(recent_low))}")
 print("-------------------------")
-print("RECOMMENDATION: BUY!")
-print("BECAUSE: TODO")
+print("RECOMMENDATION: BUY!") # TODO
+print("BECAUSE: TODO") # TODO
 print("-------------------------")
-print(f"WRITING DATA TO CSV: {csv_file_path}")
+print(f"WRITING DATA TO CSV: {printable_csv_filepath}")
 print("-------------------------")
 print("HAPPY INVESTING!")
 print("-------------------------")
