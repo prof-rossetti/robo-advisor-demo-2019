@@ -1,0 +1,4 @@
+# .gitignore
+
+# ignore secret environment variable values
+.env
