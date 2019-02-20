@@ -35,12 +35,16 @@ latest_close = tsd[latest_day]["4. close"] #> 1,000.00
 #recent_high = max(high_prices)
 
 high_prices = []
+low_prices = []
 
 for date in dates:
     high_price = tsd[date]["2. high"]
+    low_price = tsd[date]["3. low"]
     high_prices.append(float(high_price))
+    low_prices.append(float(low_price))
 
 recent_high = max(high_prices)
+recent_low = min(low_prices)
 
 #
 # INFO OUTPUTS
@@ -55,7 +59,7 @@ print("-------------------------")
 print(f"LATEST DAY: {last_refreshed}")
 print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
 print(f"RECENT HIGH: {to_usd(float(recent_high))}")
-print("RECENT LOW: $999.99")
+print(f"RECENT LOW: {to_usd(float(recent_low))}")
 print("-------------------------")
 print("RECOMMENDATION: BUY!")
 print("BECAUSE: TODO")
