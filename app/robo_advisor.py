@@ -1,6 +1,7 @@
 # app/robo_advisor.py
 
 import csv
+import datetime
 import json
 import os
 
@@ -18,11 +19,13 @@ def to_usd(my_price):
 # INFO INPUTS
 #
 
+time_now = datetime.datetime.now() #> datetime.datetime(2019, 3, 3, 14, 44, 57, 139564)
+
 # ASSEMBLE REQUEST URL
 
 api_key = os.environ.get("ALPHAVANTAGE_API_KEY", "demo") # default to using the "demo" key if an Env Var is not supplied
 
-symbol = "MSFT" # TODO: accept user input
+symbol = "AMZN" # TODO: accept user input
 
 request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={api_key}"
 
@@ -50,9 +53,6 @@ for date, daily_prices in tsd.items(): # see: https://github.com/prof-rossetti/g
     }
     rows.append(row)
 
-# breakpoint()
-# (pdb) rows[0]
-#> {'timestamp': '2019-02-20', 'open': 107.86, 'high': 107.94, 'low': 106.295, 'close': 107.15, 'volume': 21604807}
 latest_close = rows[0]["close"]
 
 high_prices = [row["high"] for row in rows] # list comprehension for mapping purposes!
@@ -66,9 +66,9 @@ recent_low = min(low_prices)
 
 # WRITE PRICES TO CSV FILE
 # see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/modules/csv.md#writing-csv-files
+# see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/modules/os.md#file-operations
 
-csv_filepath = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv") # see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/modules/os.md#file-operations
-
+csv_filepath = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv")
 csv_headers = ["timestamp", "open", "high", "low", "close", "volume"]
 
 with open(csv_filepath, "w") as csv_file:
@@ -79,23 +79,23 @@ with open(csv_filepath, "w") as csv_file:
 
 # DISPLAY RESULTS
 
-printable_csv_filepath = csv_filepath.split("../")[1] #> data/prices.csv
+formatted_time_now = time_now.strftime("%Y-%m-%d %H:%M:%S") #> '2019-03-03 14:45:27'
+
+formatted_csv_filepath = csv_filepath.split("../")[1] #> data/prices.csv
 
 print("-------------------------")
-print(f"SELECTED SYMBOL: {symbol}")
+print(f"SYMBOL: {symbol}")
 print("-------------------------")
-print("REQUESTING STOCK MARKET DATA")
-print("REQUEST AT: 2018-02-20 14:00") # TODO: dynamic datetime
+print(f"REQUEST AT: {formatted_time_now}")
+print(f"REFRESH DATE: {last_refreshed}")
 print("-------------------------")
-print(f"LAST REFRESH: {last_refreshed}")
-print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
-print(f"RECENT HIGH: {to_usd(float(recent_high))}")
-print(f"RECENT LOW: {to_usd(float(recent_low))}")
+print(f"RECENT HIGH:  {to_usd(recent_high)}")
+print(f"LATEST CLOSE: {to_usd(latest_close)}")
+print(f"RECENT LOW:   {to_usd(recent_low)}")
 print("-------------------------")
-print("RECOMMENDATION: BUY!") # TODO
+print("RECOMMENDATION: TODO") # TODO
 print("BECAUSE: TODO") # TODO
-print("-------------------------")
-print(f"WRITING DATA TO CSV: {printable_csv_filepath}")
+print(f"WRITING DATA TO CSV: {formatted_csv_filepath}")
 print("-------------------------")
 print("HAPPY INVESTING!")
 print("-------------------------")
