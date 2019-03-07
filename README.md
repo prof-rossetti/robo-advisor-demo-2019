@@ -22,6 +22,7 @@ Use Anaconda to create and activate a new virtual environment, perhaps called "s
 
 ```sh
 pip install requests python-dotenv
+conda install -c anaconda pytest # maybe this way, otherwise normally ... pip install pytest
 ```
 
 ## Setup
@@ -38,6 +39,14 @@ Run the recommendation script:
 
 ```py
 python app/robo_advisor.py
+```
+
+## Tests
+
+Run tests:
+
+```py
+pytest
 ```
 
 ## [License](/LICENSE.md)
