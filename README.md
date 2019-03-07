@@ -4,6 +4,8 @@ A solution for the ["Robo Advisor" project](https://github.com/prof-rossetti/geo
 
 Issues requests to the [AlphaVantage Stock Market API](https://www.alphavantage.co/) in order to provide automated stock or cryptocurrency trading recommendations.
 
+[![Build Status](https://travis-ci.com/s2t2/robo-advisor-screencast.svg?branch=v3-testing)](https://travis-ci.com/s2t2/robo-advisor-screencast)
+
 ## Prerequisites
 
   + Anaconda 3.7
