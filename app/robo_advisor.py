@@ -13,6 +13,9 @@ import requests
 def to_usd(my_price):
     return "${0:,.2f}".format(my_price) #> $12,000.71
 
+def write_to_csv(rows, csv_filepath):
+    return True
+
 if __name__ == "__main__":
 
     load_dotenv() #> loads contents of the .env file into the script's environment
@@ -78,6 +81,10 @@ if __name__ == "__main__":
         writer.writeheader() # uses fieldnames set above
         for row in rows:
             writer.writerow(row)
+
+
+
+
 
     # DISPLAY RESULTS
 
