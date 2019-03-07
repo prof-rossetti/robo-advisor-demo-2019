@@ -6,3 +6,6 @@
 # ignore files created by pytest
 __pycache__
 .pytest_cache
+
+# ignore temporary files created during the testing process
+test/example_reports/temp_prices.csv

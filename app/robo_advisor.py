@@ -13,7 +13,19 @@ import requests
 def to_usd(my_price):
     return "${0:,.2f}".format(my_price) #> $12,000.71
 
+# `rows` should be a list of dictionaries
+# `csv_filepath` should be a string filepath pointing to where the data should be written
+# ... see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/modules/csv.md#writing-csv-files
+# ... see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/modules/os.md#file-operations
 def write_to_csv(rows, csv_filepath):
+    csv_headers = ["timestamp", "open", "high", "low", "close", "volume"]
+
+    with open(csv_filepath, "w") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
+        writer.writeheader() # uses fieldnames set above
+        for row in rows:
+            writer.writerow(row)
+
     return True
 
 if __name__ == "__main__":
@@ -70,21 +82,10 @@ if __name__ == "__main__":
     #
 
     # WRITE PRICES TO CSV FILE
-    # see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/modules/csv.md#writing-csv-files
-    # see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/modules/os.md#file-operations
 
     csv_filepath = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv")
-    csv_headers = ["timestamp", "open", "high", "low", "close", "volume"]
 
-    with open(csv_filepath, "w") as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
-        writer.writeheader() # uses fieldnames set above
-        for row in rows:
-            writer.writerow(row)
-
-
-
-
+    write_to_csv(csv_filepath)
 
     # DISPLAY RESULTS
 
