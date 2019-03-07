@@ -91,7 +91,7 @@ if __name__ == "__main__":
 
     csv_filepath = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv")
 
-    write_to_csv(csv_filepath)
+    write_to_csv(rows, csv_filepath)
 
     # DISPLAY RESULTS
 
