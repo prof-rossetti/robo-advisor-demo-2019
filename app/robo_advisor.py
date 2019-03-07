@@ -28,6 +28,10 @@ def write_to_csv(rows, csv_filepath):
 
     return True
 
+# `parsed_response` should be a dictionary representing the original JSON response with keys: "Meta Data" and "Time Series Daily"
+def transform_response(parsed_response):
+    return []
+
 if __name__ == "__main__":
 
     load_dotenv() #> loads contents of the .env file into the script's environment
@@ -69,6 +73,11 @@ if __name__ == "__main__":
             "volume": int(daily_prices["5. volume"])
         }
         rows.append(row)
+
+
+
+
+
 
     latest_close = rows[0]["close"]
 
