@@ -30,7 +30,22 @@ def write_to_csv(rows, csv_filepath):
 
 # `parsed_response` should be a dictionary representing the original JSON response with keys: "Meta Data" and "Time Series Daily"
 def transform_response(parsed_response):
-    return []
+    tsd = parsed_response["Time Series (Daily)"]
+
+    rows = []
+
+    for date, daily_prices in tsd.items(): # see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/datatypes/dictionaries.md
+        row = {
+            "timestamp": date,
+            "open": float(daily_prices["1. open"]),
+            "high": float(daily_prices["2. high"]),
+            "low": float(daily_prices["3. low"]),
+            "close": float(daily_prices["4. close"]),
+            "volume": int(daily_prices["5. volume"])
+        }
+        rows.append(row)
+
+    return rows
 
 if __name__ == "__main__":
 
@@ -54,33 +69,15 @@ if __name__ == "__main__":
 
     response = requests.get(request_url)
     parsed_response = json.loads(response.text)
-    metadata = parsed_response["Meta Data"]
-    tsd = parsed_response["Time Series (Daily)"]
 
+    metadata = parsed_response["Meta Data"]
     last_refreshed = metadata["3. Last Refreshed"]
 
     # TRANSFORM DATA INTO A MORE FAMILIAR / USABLE STRUCTURE (LIST OF DICTIONARIES :-D)
 
-    rows = []
-
-    for date, daily_prices in tsd.items(): # see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/datatypes/dictionaries.md
-        row = {
-            "timestamp": date,
-            "open": float(daily_prices["1. open"]),
-            "high": float(daily_prices["2. high"]),
-            "low": float(daily_prices["3. low"]),
-            "close": float(daily_prices["4. close"]),
-            "volume": int(daily_prices["5. volume"])
-        }
-        rows.append(row)
-
-
-
-
-
+    rows = transform_response(parsed_response)
 
     latest_close = rows[0]["close"]
-
     high_prices = [row["high"] for row in rows] # list comprehension for mapping purposes!
     low_prices = [row["low"] for row in rows] # list comprehension for mapping purposes!
     recent_high = max(high_prices)
