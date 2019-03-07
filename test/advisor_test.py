@@ -30,4 +30,4 @@ def test_write_to_csv():
     # EXPECTATIONS
 
     assert result == True
-    # assert os.path.isfile(csv_filepath) == True
+    assert os.path.isfile(csv_filepath) == True
