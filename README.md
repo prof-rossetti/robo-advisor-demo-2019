@@ -34,6 +34,8 @@ After obtaining an API Key, create a new file in this repository called ".env", 
 
     ALPHAVANTAGE_API_KEY="abc123"
 
+> NOTE: this app will try to use a "demo" API key if this environment variables is not configured.
+
 ## Usage
 
 Run the recommendation script:
@@ -53,7 +55,7 @@ pip install pytest
 Run tests:
 
 ```sh
-pytest
+pytest --disable-pytest-warnings
 ```
 
 ## [License](/LICENSE.md)

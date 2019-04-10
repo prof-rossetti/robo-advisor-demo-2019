@@ -1,9 +1,20 @@
 import os
+import pytest
 
-from app.robo_advisor import to_usd, transform_response, write_to_csv
+from app.robo_advisor import get_response, transform_response, write_to_csv, to_usd
 
-def test_to_usd():
-    assert to_usd(123456.8) == "$123,456.80"
+CI_ENV = os.environ.get("CI") == "true" # expect default environment variable setting of "CI=true" on Travis CI, see: https://docs.travis-ci.com/user/environment-variables/#default-environment-variables
+
+@pytest.mark.skipif(CI_ENV==True, reason="to avoid configuring credentials on, and issuing requests from, the CI server")
+def test_get_response():
+    symbol = "NFLX"
+
+    parsed_response = get_response(symbol)
+
+    assert isinstance(parsed_response, dict)
+    assert "Meta Data" in parsed_response.keys()
+    assert "Time Series (Daily)" in parsed_response.keys()
+    assert parsed_response["Meta Data"]["2. Symbol"] == symbol
 
 def test_transform_response():
     parsed_response = {
@@ -47,10 +58,6 @@ def test_transform_response():
 
     assert transform_response(parsed_response) == transformed_response
 
-def test_float_conversion():
-    assert float("102.6500") == 102.65
-    assert float("101.0924") == 101.0924 # interesting but helpful that the full value is retained
-
 def test_write_to_csv():
 
     # SETUP
@@ -80,3 +87,10 @@ def test_write_to_csv():
     assert result == True
     assert os.path.isfile(csv_filepath) == True
     # TODO: consider also testing the file contents!
+
+def test_to_usd():
+    assert to_usd(123456.8) == "$123,456.80"
+
+def test_float_conversion():
+    assert float("102.6500") == 102.65
+    assert float("101.0924") == 101.0924 # interesting but helpful that the full value is retained

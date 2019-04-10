@@ -8,32 +8,22 @@ import os
 from dotenv import load_dotenv
 import requests
 
-# utility function to convert float or integer to usd-formatted string (for printing)
-# ... adapted from: https://github.com/s2t2/shopping-cart-screencast/blob/30c2a2873a796b8766e9b9ae57a2764725ccc793/shopping_cart.py#L56-L59
-def to_usd(my_price):
-    return "${0:,.2f}".format(my_price) #> $12,000.71
+load_dotenv() #> loads contents of the .env file into the script's environment
 
-# `rows` should be a list of dictionaries
-# `csv_filepath` should be a string filepath pointing to where the data should be written
-# ... see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/modules/csv.md#writing-csv-files
-# ... see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/modules/os.md#file-operations
-def write_to_csv(rows, csv_filepath):
-    csv_headers = ["timestamp", "open", "high", "low", "close", "volume"]
+API_KEY = os.environ.get("ALPHAVANTAGE_API_KEY", "demo") # default to using the "demo" key if an Env Var is not supplied
 
-    with open(csv_filepath, "w") as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
-        writer.writeheader() # uses fieldnames set above
-        for row in rows:
-            writer.writerow(row)
+def get_response(symbol):
+    request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={API_KEY}"
+    response = requests.get(request_url)
+    parsed_response = json.loads(response.text)
+    return parsed_response
 
-    return True
-
-# `parsed_response` should be a dictionary representing the original JSON response with keys: "Meta Data" and "Time Series Daily"
 def transform_response(parsed_response):
+    # parsed_response should be a dictionary representing the original JSON response
+    # it should have keys: "Meta Data" and "Time Series Daily"
     tsd = parsed_response["Time Series (Daily)"]
 
     rows = []
-
     for date, daily_prices in tsd.items(): # see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/datatypes/dictionaries.md
         row = {
             "timestamp": date,
@@ -47,33 +37,37 @@ def transform_response(parsed_response):
 
     return rows
 
+def write_to_csv(rows, csv_filepath):
+    # rows should be a list of dictionaries
+    # csv_filepath should be a string filepath pointing to where the data should be written
+
+    csv_headers = ["timestamp", "open", "high", "low", "close", "volume"]
+
+    with open(csv_filepath, "w") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
+        writer.writeheader() # uses fieldnames set above
+        for row in rows:
+            writer.writerow(row)
+
+    return True
+
+def to_usd(my_price):
+    # utility function to convert float or integer to usd-formatted string (for printing)
+    return "${0:,.2f}".format(my_price) #> $12,000.71
+
 if __name__ == "__main__":
 
-    load_dotenv() #> loads contents of the .env file into the script's environment
+    time_now = datetime.datetime.now() #> datetime.datetime(2019, 3, 3, 14, 44, 57, 139564)
 
     #
     # INFO INPUTS
     #
 
-    time_now = datetime.datetime.now() #> datetime.datetime(2019, 3, 3, 14, 44, 57, 139564)
-
-    # ASSEMBLE REQUEST URL
-
-    api_key = os.environ.get("ALPHAVANTAGE_API_KEY", "demo") # default to using the "demo" key if an Env Var is not supplied
-
     symbol = "AMZN" # TODO: accept user input
 
-    request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={api_key}"
+    parsed_response = get_response(symbol)
 
-    # ISSUE REQUEST AND PARSE RESPONSE
-
-    response = requests.get(request_url)
-    parsed_response = json.loads(response.text)
-
-    metadata = parsed_response["Meta Data"]
-    last_refreshed = metadata["3. Last Refreshed"]
-
-    # TRANSFORM DATA INTO A MORE FAMILIAR / USABLE STRUCTURE (LIST OF DICTIONARIES :-D)
+    last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
 
     rows = transform_response(parsed_response)
 
