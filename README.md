@@ -20,7 +20,7 @@ cd robo-advisor-demo-2019
 
 > NOTE: subsequent usage and testing commands assume you are running them from the repository's root directory.
 
-Use Anaconda to create and activate a new virtual environment, perhaps called "stocks-env".
+Use Anaconda to create and activate a new virtual environment, perhaps called "stocks-env":
 
 ```sh
 conda create -n stocks-env python=3.7 # (first time only)
@@ -64,7 +64,10 @@ pip install pytest
 Run tests:
 
 ```sh
-pytest --disable-pytest-warnings
+pytest
+
+# or, skipping tests that issue network requests:
+CI=true pytest
 ```
 
 ## [License](/LICENSE.md)
