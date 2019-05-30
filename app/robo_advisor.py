@@ -91,7 +91,7 @@ if __name__ == "__main__":
 
     formatted_time_now = time_now.strftime("%Y-%m-%d %H:%M:%S") #> '2019-03-03 14:45:27'
 
-    formatted_csv_filepath = csv_filepath.split("../")[1] #> data/prices.csv
+    formatted_csv_filepath = csv_filepath.split("..")[1] #> data/prices.csv
 
     print("-------------------------")
     print(f"SYMBOL: {symbol}")
