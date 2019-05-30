@@ -43,8 +43,6 @@ After obtaining an API Key, create a new called ".env" (in your local repo, NOT 
 
 Don't worry, the ".env" has already been [ignored](/.gitignore) from version control for you!
 
-> NOTE: this app will try to use a "demo" API key if this environment variables is not configured.
-
 ## Usage
 
 Run the recommendation script:
