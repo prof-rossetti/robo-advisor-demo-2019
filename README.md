@@ -37,7 +37,7 @@ pip install -r requirements.txt
 
 Before using or developing this application, take a moment to [obtain an AlphaVantage API Key](https://www.alphavantage.co/support/#api-key) (e.g. "abc123").
 
-After obtaining an API Key, create a new file in this repository called ".env", and update the contents of the ".env" file to specify your real API Key:
+After obtaining an API Key, create a new called ".env" (in your local repo, NOT your remote repo), and update the contents of the ".env" file to specify your real API Key:
 
     ALPHAVANTAGE_API_KEY="abc123"
 
